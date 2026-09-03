@@ -5,7 +5,8 @@ import os
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
-DB_FILE = 'water_system.db'
+# Vercel's serverless environment has a read-only filesystem except for /tmp
+DB_FILE = '/tmp/water_system.db' if os.environ.get('VERCEL') else 'water_system.db'
 
 def get_db_connection():
     conn = sqlite3.connect(DB_FILE)
