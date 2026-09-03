@@ -123,12 +123,12 @@ async function fetchHistoryData() {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                color: '#eceff1',
+                color: '#2c3e50',
                 scales: {
-                    x: { ticks: { color: '#b0bec5' }, grid: { color: '#37474f' } },
-                    y: { beginAtZero: true, ticks: { color: '#b0bec5' }, grid: { color: '#37474f' } }
+                    x: { ticks: { color: '#7f8c8d' }, grid: { color: '#ecf0f1' } },
+                    y: { beginAtZero: true, ticks: { color: '#7f8c8d' }, grid: { color: '#ecf0f1' } }
                 },
-                plugins: { legend: { labels: { color: '#eceff1', font: { family: 'monospace' } } } }
+                plugins: { legend: { labels: { color: '#2c3e50', font: { family: 'inherit', weight: 'bold' } } } }
             }
         });
 
@@ -145,26 +145,26 @@ async function fetchHistoryData() {
                     {
                         label: 'Flow IN',
                         data: flowIn,
-                        backgroundColor: '#29b6f6',
-                        borderRadius: 2
+                        backgroundColor: '#3498db',
+                        borderRadius: 3
                     },
                     {
                         label: 'Flow OUT',
                         data: flowOut,
-                        backgroundColor: '#ab47bc',
-                        borderRadius: 2
+                        backgroundColor: '#9b59b6',
+                        borderRadius: 3
                     }
                 ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                color: '#eceff1',
+                color: '#2c3e50',
                 scales: {
-                    x: { ticks: { color: '#b0bec5' }, grid: { display: false } },
-                    y: { beginAtZero: true, ticks: { color: '#b0bec5' }, grid: { color: '#37474f' } }
+                    x: { ticks: { color: '#7f8c8d' }, grid: { display: false } },
+                    y: { beginAtZero: true, ticks: { color: '#7f8c8d' }, grid: { color: '#ecf0f1' } }
                 },
-                plugins: { legend: { labels: { color: '#eceff1', font: { family: 'monospace' } } } }
+                plugins: { legend: { labels: { color: '#2c3e50', font: { family: 'inherit', weight: 'bold' } } } }
             }
         });
 
