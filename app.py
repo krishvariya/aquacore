@@ -3,11 +3,21 @@ import sqlite3
 import random
 import os
 from datetime import datetime, timedelta
-
 import sys
+import joblib
+import numpy as np
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__, template_folder=os.path.join(base_dir, 'templates'), static_folder=os.path.join(base_dir, 'static'))
+
+# Load the AI model
+model_path = os.path.join(base_dir, 'model.pkl')
+ai_model = None
+try:
+    ai_model = joblib.load(model_path)
+    print("Successfully loaded AI model!")
+except Exception as e:
+    print(f"Warning: Could not load AI model from {model_path}: {e}")
 
 # Use /tmp on Linux (Vercel) to avoid read-only filesystem errors
 DB_FILE = '/tmp/water_system.db' if sys.platform != 'win32' else 'water_system.db'
@@ -78,8 +88,6 @@ def history_data():
 
 @app.route('/api/predict', methods=['POST'])
 def predict():
-    # In a real scenario, this would pass inputs to the loaded AI model
-    # For now, we mock the predictions based on inputs
     req = request.json
     try:
         ph_in = float(req.get('pH_in', 7.0))
@@ -88,12 +96,18 @@ def predict():
         temp_in = float(req.get('Temperature_in', 25))
         flow_in = float(req.get('Flow_in', 50))
         
-        # Mock AI logic: water purification reduces TDS and Turbidity, normalizes pH
-        ph_out = ph_in - (ph_in - 7.0) * 0.8
-        tds_out = tds_in * 0.2
-        turb_out = turb_in * 0.1
-        temp_out = temp_in
-        flow_out = flow_in * 0.95 # some loss
+        if ai_model:
+            # Predict using the real Machine Learning model!
+            features = np.array([[ph_in, tds_in, turb_in, temp_in, flow_in]])
+            prediction = ai_model.predict(features)[0]
+            ph_out, tds_out, turb_out, temp_out, flow_out = prediction
+        else:
+            # Fallback mock logic
+            ph_out = ph_in - (ph_in - 7.0) * 0.8
+            tds_out = tds_in * 0.2
+            turb_out = turb_in * 0.1
+            temp_out = temp_in
+            flow_out = flow_in * 0.95 
         
         return jsonify({
             'pH_out': round(ph_out, 2),
