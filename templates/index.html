@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Water Monitoring System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">Water Monitoring & AI Prediction Dashboard</span>
+        </div>
+    </nav>
+
+    <div class="container-fluid px-4">
+        <div class="row">
+            <!-- System Status -->
+            <div class="col-md-3 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-primary text-white">System Status</div>
+                    <div class="card-body">
+                        <p><strong>Pressure 1:</strong> <span id="sys_p1">-</span> bar</p>
+                        <p><strong>Pressure 2:</strong> <span id="sys_p2">-</span> bar</p>
+                        <p><strong>Pressure 3:</strong> <span id="sys_p3">-</span> bar</p>
+                        <hr>
+                        <p><strong>Pump Current:</strong> <span id="sys_pump">-</span> A</p>
+                        <p><strong>Tank Level:</strong> <span id="sys_tank">-</span> %</p>
+                        <p><strong>Valve Status:</strong> <span id="sys_valve">-</span></p>
+                        <hr>
+                        <p><strong>Filter Runtime:</strong> <span id="sys_runtime">-</span> hrs</p>
+                        <p><strong>Vol Processed:</strong> <span id="sys_vol">-</span> L</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Inputs/Outputs -->
+            <div class="col-md-5 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-success text-white">Current Sensor Readings</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <h5>Inputs</h5>
+                                <table class="table table-sm">
+                                    <tr><td>pH In:</td><td id="curr_ph_in">-</td></tr>
+                                    <tr><td>TDS In:</td><td id="curr_tds_in">-</td></tr>
+                                    <tr><td>Turb In:</td><td id="curr_turb_in">-</td></tr>
+                                    <tr><td>Temp In:</td><td id="curr_temp_in">-</td></tr>
+                                    <tr><td>Flow In:</td><td id="curr_flow_in">-</td></tr>
+                                </table>
+                            </div>
+                            <div class="col-6">
+                                <h5>Outputs</h5>
+                                <table class="table table-sm">
+                                    <tr><td>pH Out:</td><td id="curr_ph_out">-</td></tr>
+                                    <tr><td>TDS Out:</td><td id="curr_tds_out">-</td></tr>
+                                    <tr><td>Turb Out:</td><td id="curr_turb_out">-</td></tr>
+                                    <tr><td>Temp Out:</td><td id="curr_temp_out">-</td></tr>
+                                    <tr><td>Flow Out:</td><td id="curr_flow_out">-</td></tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Predictor -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-warning text-dark">AI Model Simulator</div>
+                    <div class="card-body">
+                        <form id="predictForm">
+                            <div class="row mb-2">
+                                <div class="col"><input type="number" step="0.1" class="form-control form-control-sm" id="p_ph_in" placeholder="pH In" required></div>
+                                <div class="col"><input type="number" step="1" class="form-control form-control-sm" id="p_tds_in" placeholder="TDS In" required></div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col"><input type="number" step="0.1" class="form-control form-control-sm" id="p_turb_in" placeholder="Turb In" required></div>
+                                <div class="col"><input type="number" step="0.1" class="form-control form-control-sm" id="p_temp_in" placeholder="Temp In" required></div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col"><input type="number" step="1" class="form-control form-control-sm" id="p_flow_in" placeholder="Flow In" required></div>
+                            </div>
+                            <button type="submit" class="btn btn-sm btn-dark w-100">Predict Outputs</button>
+                        </form>
+                        <hr>
+                        <h6>Predicted Outputs</h6>
+                        <div class="row">
+                            <div class="col-6"><small>pH Out: <span id="pred_ph" class="fw-bold">-</span></small></div>
+                            <div class="col-6"><small>TDS Out: <span id="pred_tds" class="fw-bold">-</span></small></div>
+                            <div class="col-6"><small>Turb Out: <span id="pred_turb" class="fw-bold">-</span></small></div>
+                            <div class="col-6"><small>Temp Out: <span id="pred_temp" class="fw-bold">-</span></small></div>
+                            <div class="col-6"><small>Flow Out: <span id="pred_flow" class="fw-bold">-</span></small></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historical Data Chart -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-info text-white">Historical Data (TDS Trend)</div>
+                    <div class="card-body">
+                        <canvas id="historyChart" height="60"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/script.js"></script>
+</body>
+</html>
