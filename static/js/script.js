@@ -2,10 +2,29 @@ let chartInstance = null;
 
 function updateClock() {
     const now = new Date();
-    document.getElementById('clock').textContent = now.toLocaleTimeString('en-US', { hour12: false });
+    const clockEl = document.getElementById('clock');
+    if (clockEl) {
+        clockEl.textContent = now.toLocaleTimeString('en-US', { hour12: false });
+    }
 }
 setInterval(updateClock, 1000);
 updateClock();
+
+function switchTab(tabId, element) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-pane').forEach(el => el.style.display = 'none');
+    // Show selected tab
+    document.getElementById('tab-' + tabId).style.display = 'block';
+    
+    // Update active class on sidebar
+    document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
+    element.classList.add('active');
+
+    // Close sidebar on mobile after clicking
+    if (window.innerWidth < 992) {
+        document.querySelector('.sidebar').classList.remove('show');
+    }
+}
 
 function setBar(id, val, max) {
     let p = (val / max) * 100;

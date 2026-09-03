@@ -9,172 +9,208 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <!-- Mobile Header -->
+    <div class="d-lg-none d-flex justify-content-between align-items-center p-3 bg-white border-bottom">
+        <div class="brand-text m-0" style="font-size: 1.2rem; margin-bottom: 0 !important;">AQUACORE</div>
+        <button class="btn btn-light border" onclick="document.querySelector('.sidebar').classList.toggle('show');">☰</button>
+    </div>
+
     <div class="layout-wrapper">
         <!-- Sidebar -->
-        <div class="sidebar d-none d-lg-block">
-            <div class="brand-text">AQUACORED</div>
+        <div class="sidebar">
+            <div class="brand-text d-none d-lg-block">AQUACORE</div>
             <div class="mb-4">
-                <a href="#" class="sidebar-link active">Reports</a>
-                <a href="#" class="sidebar-link">Library</a>
-                <a href="#" class="sidebar-link">People</a>
-                <a href="#" class="sidebar-link">Activities</a>
+                <a href="#" class="sidebar-link active" onclick="switchTab('reports', this)">Reports</a>
+                <a href="#" class="sidebar-link" onclick="switchTab('library', this)">Library</a>
+                <a href="#" class="sidebar-link" onclick="switchTab('people', this)">People</a>
+                <a href="#" class="sidebar-link" onclick="switchTab('activities', this)">Activities</a>
             </div>
             <div style="font-size: 0.8rem; color: #9ca3af; font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase;">Support</div>
             <div>
-                <a href="#" class="sidebar-link">Get Started</a>
-                <a href="#" class="sidebar-link">Settings</a>
+                <a href="#" class="sidebar-link" onclick="switchTab('get-started', this)">Get Started</a>
+                <a href="#" class="sidebar-link" onclick="switchTab('settings', this)">Settings</a>
             </div>
         </div>
 
         <!-- Main Content -->
         <div class="main-content">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3 class="fw-bold m-0">Water Plant Status</h3>
-                <span class="text-muted fw-bold" id="clock"></span>
-            </div>
+            <!-- TAB: REPORTS (Dashboard) -->
+            <div id="tab-reports" class="tab-pane" style="display: block;">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="fw-bold m-0">Water Plant Status</h3>
+                    <span class="text-muted fw-bold" id="clock"></span>
+                </div>
 
-            <!-- Top Stats -->
-            <div class="row g-3 mb-3">
-                <div class="col-6 col-md-3">
-                    <div class="card stat-box mb-0 h-100">
-                        <div class="stat-title">Tank Level</div>
-                        <div class="stat-value"><span id="sys_tank">0</span><span class="fs-5">%</span></div>
-                        <div class="stat-sub">Storage Capacity</div>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="card stat-box mb-0 h-100">
-                        <div class="stat-title">Pump Current</div>
-                        <div class="stat-value"><span id="sys_pump">0</span><span class="fs-5">A</span></div>
-                        <div class="stat-sub">Main Intake</div>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="card stat-box mb-0 h-100">
-                        <div class="stat-title">Filter Runtime</div>
-                        <div class="stat-value"><span id="sys_runtime">0</span><span class="fs-5">h</span></div>
-                        <div class="stat-sub">Since Last Wash</div>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="card stat-box mb-0 h-100">
-                        <div class="stat-title">Vol. Processed</div>
-                        <div class="stat-value"><span id="sys_vol">0</span><span class="fs-5">L</span></div>
-                        <div class="stat-sub">Total Lifecycle</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row g-3 mb-3">
-                <!-- Process IN -->
-                <div class="col-lg-4">
-                    <div class="card h-100 mb-0">
-                        <div class="card-title-custom">Process IN</div>
-                        
-                        <div class="progress-row">
-                            <div class="progress-label">pH In</div>
-                            <div class="custom-progress-bg"><div class="custom-progress-bar bg-gradient-blue" id="b_ph_in" style="width: 0%;"></div></div>
-                            <div class="progress-val"><span id="curr_ph_in">0</span></div>
+                <!-- Top Stats -->
+                <div class="row g-3 mb-3">
+                    <div class="col-6 col-md-3">
+                        <div class="card stat-box mb-0 h-100">
+                            <div class="stat-title">Tank Level</div>
+                            <div class="stat-value"><span id="sys_tank">0</span><span class="fs-5 text-muted">%</span></div>
+                            <div class="stat-sub">Storage Capacity</div>
                         </div>
-                        <div class="progress-row">
-                            <div class="progress-label">TDS In</div>
-                            <div class="custom-progress-bg"><div class="custom-progress-bar bg-gradient-orange" id="b_tds_in" style="width: 0%;"></div></div>
-                            <div class="progress-val"><span id="curr_tds_in">0</span> ppm</div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="card stat-box mb-0 h-100">
+                            <div class="stat-title">Pump Current</div>
+                            <div class="stat-value"><span id="sys_pump">0</span><span class="fs-5 text-muted">A</span></div>
+                            <div class="stat-sub">Main Intake</div>
                         </div>
-                        <div class="progress-row">
-                            <div class="progress-label">Turb In</div>
-                            <div class="custom-progress-bg"><div class="custom-progress-bar bg-gradient-red" id="b_turb_in" style="width: 0%;"></div></div>
-                            <div class="progress-val"><span id="curr_turb_in">0</span> NTU</div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="card stat-box mb-0 h-100">
+                            <div class="stat-title">Filter Runtime</div>
+                            <div class="stat-value"><span id="sys_runtime">0</span><span class="fs-5 text-muted">h</span></div>
+                            <div class="stat-sub">Since Last Wash</div>
                         </div>
-                        <div class="progress-row">
-                            <div class="progress-label">Temp In</div>
-                            <div class="custom-progress-bg"><div class="custom-progress-bar bg-gradient-green" id="b_temp_in" style="width: 0%;"></div></div>
-                            <div class="progress-val"><span id="curr_temp_in">0</span> °C</div>
-                        </div>
-                        <div class="progress-row">
-                            <div class="progress-label">Flow In</div>
-                            <div class="custom-progress-bg"><div class="custom-progress-bar bg-gradient-blue" id="b_flow_in" style="width: 0%;"></div></div>
-                            <div class="progress-val"><span id="curr_flow_in">0</span> L/m</div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="card stat-box mb-0 h-100">
+                            <div class="stat-title">Vol. Processed</div>
+                            <div class="stat-value"><span id="sys_vol">0</span><span class="fs-5 text-muted">L</span></div>
+                            <div class="stat-sub">Total Lifecycle</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Process OUT -->
-                <div class="col-lg-4">
-                    <div class="card h-100 mb-0">
-                        <div class="card-title-custom">Process OUT</div>
-                        
-                        <div class="progress-row">
-                            <div class="progress-label">pH Out</div>
-                            <div class="custom-progress-bg"><div class="custom-progress-bar bg-gradient-green" id="b_ph_out" style="width: 0%;"></div></div>
-                            <div class="progress-val"><span id="curr_ph_out">0</span></div>
-                        </div>
-                        <div class="progress-row">
-                            <div class="progress-label">TDS Out</div>
-                            <div class="custom-progress-bg"><div class="custom-progress-bar bg-gradient-green" id="b_tds_out" style="width: 0%;"></div></div>
-                            <div class="progress-val"><span id="curr_tds_out">0</span> ppm</div>
-                        </div>
-                        <div class="progress-row">
-                            <div class="progress-label">Turb Out</div>
-                            <div class="custom-progress-bg"><div class="custom-progress-bar bg-gradient-green" id="b_turb_out" style="width: 0%;"></div></div>
-                            <div class="progress-val"><span id="curr_turb_out">0</span> NTU</div>
-                        </div>
-                        <div class="progress-row">
-                            <div class="progress-label">Temp Out</div>
-                            <div class="custom-progress-bg"><div class="custom-progress-bar bg-gradient-blue" id="b_temp_out" style="width: 0%;"></div></div>
-                            <div class="progress-val"><span id="curr_temp_out">0</span> °C</div>
-                        </div>
-                        <div class="progress-row">
-                            <div class="progress-label">Flow Out</div>
-                            <div class="custom-progress-bg"><div class="custom-progress-bar bg-gradient-blue" id="b_flow_out" style="width: 0%;"></div></div>
-                            <div class="progress-val"><span id="curr_flow_out">0</span> L/m</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- AI Predictor -->
-                <div class="col-lg-4">
-                    <div class="card h-100 mb-0">
-                        <div class="card-title-custom text-primary">AI Simulator</div>
-                        <form id="predictForm">
-                            <div class="row g-2 mb-2">
-                                <div class="col-6"><input type="number" step="0.1" class="form-control" id="p_ph_in" placeholder="pH In" required></div>
-                                <div class="col-6"><input type="number" step="1" class="form-control" id="p_tds_in" placeholder="TDS In" required></div>
+                <div class="row g-3 mb-3">
+                    <!-- Process IN -->
+                    <div class="col-lg-4">
+                        <div class="card h-100 mb-0">
+                            <div class="card-title-custom">Process IN</div>
+                            
+                            <div class="progress-row">
+                                <div class="progress-label">pH In</div>
+                                <div class="custom-progress-bg"><div class="custom-progress-bar bg-gradient-blue" id="b_ph_in" style="width: 0%;"></div></div>
+                                <div class="progress-val"><span id="curr_ph_in">0</span></div>
                             </div>
-                            <div class="row g-2 mb-3">
-                                <div class="col-4"><input type="number" step="0.1" class="form-control" id="p_turb_in" placeholder="Turb" required></div>
-                                <div class="col-4"><input type="number" step="0.1" class="form-control" id="p_temp_in" placeholder="Temp" required></div>
-                                <div class="col-4"><input type="number" step="1" class="form-control" id="p_flow_in" placeholder="Flow" required></div>
+                            <div class="progress-row">
+                                <div class="progress-label">TDS In</div>
+                                <div class="custom-progress-bg"><div class="custom-progress-bar bg-gradient-orange" id="b_tds_in" style="width: 0%;"></div></div>
+                                <div class="progress-val"><span id="curr_tds_in">0</span> ppm</div>
                             </div>
-                            <button type="submit" class="btn btn-dark w-100">RUN ML PREDICTION</button>
-                        </form>
-                        <div class="pred-box">
-                            <div>> PRED_pH:   <span id="pred_ph" class="pred-val">---</span></div>
-                            <div>> PRED_TDS:  <span id="pred_tds" class="pred-val">---</span></div>
-                            <div>> PRED_Turb: <span id="pred_turb" class="pred-val">---</span></div>
-                            <div>> PRED_Temp: <span id="pred_temp" class="pred-val">---</span></div>
-                            <div>> PRED_Flow: <span id="pred_flow" class="pred-val">---</span></div>
+                            <div class="progress-row">
+                                <div class="progress-label">Turb In</div>
+                                <div class="custom-progress-bg"><div class="custom-progress-bar bg-gradient-red" id="b_turb_in" style="width: 0%;"></div></div>
+                                <div class="progress-val"><span id="curr_turb_in">0</span> NTU</div>
+                            </div>
+                            <div class="progress-row">
+                                <div class="progress-label">Temp In</div>
+                                <div class="custom-progress-bg"><div class="custom-progress-bar bg-gradient-green" id="b_temp_in" style="width: 0%;"></div></div>
+                                <div class="progress-val"><span id="curr_temp_in">0</span> °C</div>
+                            </div>
+                            <div class="progress-row">
+                                <div class="progress-label">Flow In</div>
+                                <div class="custom-progress-bg"><div class="custom-progress-bar bg-gradient-blue" id="b_flow_in" style="width: 0%;"></div></div>
+                                <div class="progress-val"><span id="curr_flow_in">0</span> L/m</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Process OUT -->
+                    <div class="col-lg-4">
+                        <div class="card h-100 mb-0">
+                            <div class="card-title-custom">Process OUT</div>
+                            
+                            <div class="progress-row">
+                                <div class="progress-label">pH Out</div>
+                                <div class="custom-progress-bg"><div class="custom-progress-bar bg-gradient-green" id="b_ph_out" style="width: 0%;"></div></div>
+                                <div class="progress-val"><span id="curr_ph_out">0</span></div>
+                            </div>
+                            <div class="progress-row">
+                                <div class="progress-label">TDS Out</div>
+                                <div class="custom-progress-bg"><div class="custom-progress-bar bg-gradient-green" id="b_tds_out" style="width: 0%;"></div></div>
+                                <div class="progress-val"><span id="curr_tds_out">0</span> ppm</div>
+                            </div>
+                            <div class="progress-row">
+                                <div class="progress-label">Turb Out</div>
+                                <div class="custom-progress-bg"><div class="custom-progress-bar bg-gradient-green" id="b_turb_out" style="width: 0%;"></div></div>
+                                <div class="progress-val"><span id="curr_turb_out">0</span> NTU</div>
+                            </div>
+                            <div class="progress-row">
+                                <div class="progress-label">Temp Out</div>
+                                <div class="custom-progress-bg"><div class="custom-progress-bar bg-gradient-blue" id="b_temp_out" style="width: 0%;"></div></div>
+                                <div class="progress-val"><span id="curr_temp_out">0</span> °C</div>
+                            </div>
+                            <div class="progress-row">
+                                <div class="progress-label">Flow Out</div>
+                                <div class="custom-progress-bg"><div class="custom-progress-bar bg-gradient-blue" id="b_flow_out" style="width: 0%;"></div></div>
+                                <div class="progress-val"><span id="curr_flow_out">0</span> L/m</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Predictor -->
+                    <div class="col-lg-4">
+                        <div class="card h-100 mb-0">
+                            <div class="card-title-custom text-primary">AI Simulator</div>
+                            <form id="predictForm">
+                                <div class="row g-2 mb-2">
+                                    <div class="col-6"><input type="number" step="0.1" class="form-control" id="p_ph_in" placeholder="pH In" required></div>
+                                    <div class="col-6"><input type="number" step="1" class="form-control" id="p_tds_in" placeholder="TDS In" required></div>
+                                </div>
+                                <div class="row g-2 mb-3">
+                                    <div class="col-4"><input type="number" step="0.1" class="form-control" id="p_turb_in" placeholder="Turb" required></div>
+                                    <div class="col-4"><input type="number" step="0.1" class="form-control" id="p_temp_in" placeholder="Temp" required></div>
+                                    <div class="col-4"><input type="number" step="1" class="form-control" id="p_flow_in" placeholder="Flow" required></div>
+                                </div>
+                                <button type="submit" class="btn btn-dark w-100">RUN ML PREDICTION</button>
+                            </form>
+                            <div class="pred-box">
+                                <div>> PRED_pH:   <span id="pred_ph" class="pred-val">---</span></div>
+                                <div>> PRED_TDS:  <span id="pred_tds" class="pred-val">---</span></div>
+                                <div>> PRED_Turb: <span id="pred_turb" class="pred-val">---</span></div>
+                                <div>> PRED_Temp: <span id="pred_temp" class="pred-val">---</span></div>
+                                <div>> PRED_Flow: <span id="pred_flow" class="pred-val">---</span></div>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Charts -->
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="card mb-0">
+                            <div class="card-title-custom">TDS Reduction Trend</div>
+                            <div style="height: 200px;"><canvas id="tdsChart"></canvas></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-0">
+                            <div class="card-title-custom">System Flow Profile</div>
+                            <div style="height: 200px;"><canvas id="flowChart"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- End Tab Reports -->
+
+            <!-- OTHER TABS (Dummy Content) -->
+            <div id="tab-library" class="tab-pane" style="display: none;">
+                <h3 class="fw-bold mb-4">Library</h3>
+                <div class="card"><p class="text-muted m-0">Water Quality Standards, Historical Archives, and ML Model configurations will be displayed here.</p></div>
             </div>
 
-            <!-- Charts -->
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <div class="card mb-0">
-                        <div class="card-title-custom">TDS Reduction Trend</div>
-                        <div style="height: 200px;"><canvas id="tdsChart"></canvas></div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card mb-0">
-                        <div class="card-title-custom">System Flow Profile</div>
-                        <div style="height: 200px;"><canvas id="flowChart"></canvas></div>
-                    </div>
-                </div>
+            <div id="tab-people" class="tab-pane" style="display: none;">
+                <h3 class="fw-bold mb-4">People</h3>
+                <div class="card"><p class="text-muted m-0">User management, plant operators, and access permissions will be displayed here.</p></div>
             </div>
-        </div>
+
+            <div id="tab-activities" class="tab-pane" style="display: none;">
+                <h3 class="fw-bold mb-4">Activities</h3>
+                <div class="card"><p class="text-muted m-0">System logs, maintenance alerts, and recent AI predictions will be displayed here.</p></div>
+            </div>
+
+            <div id="tab-get-started" class="tab-pane" style="display: none;">
+                <h3 class="fw-bold mb-4">Get Started</h3>
+                <div class="card"><p class="text-muted m-0">Welcome to AquaCore! Read the documentation and setup guides here.</p></div>
+            </div>
+
+            <div id="tab-settings" class="tab-pane" style="display: none;">
+                <h3 class="fw-bold mb-4">Settings</h3>
+                <div class="card"><p class="text-muted m-0">Configure your system preferences, API keys, and notification rules here.</p></div>
+            </div>
+
+        </div> <!-- End Main Content -->
     </div>
 
     <script src="/static/js/script.js"></script>
