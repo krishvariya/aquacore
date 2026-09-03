@@ -7,62 +7,57 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
+function setBar(id, val, max) {
+    let p = (val / max) * 100;
+    if(p > 100) p = 100;
+    if(p < 0) p = 0;
+    const el = document.getElementById(id);
+    if(el) el.style.width = p + '%';
+}
+
 async function fetchLatestData() {
     try {
         const response = await fetch('/api/data/latest');
         const data = await response.json();
         
         if(Object.keys(data).length > 0) {
-            // System
-            document.getElementById('sys_p1').textContent = data.Pressure_1.toFixed(1);
-            document.getElementById('m_p1').value = data.Pressure_1;
-            
-            document.getElementById('sys_p2').textContent = data.Pressure_2.toFixed(1);
-            document.getElementById('m_p2').value = data.Pressure_2;
-            
-            document.getElementById('sys_p3').textContent = data.Pressure_3.toFixed(1);
-            document.getElementById('m_p3').value = data.Pressure_3;
-            
-            document.getElementById('sys_pump').textContent = data.Pump_current.toFixed(1);
-            document.getElementById('m_pump').value = data.Pump_current;
-            
-            document.getElementById('sys_tank').textContent = data.Tank_level.toFixed(0);
-            document.getElementById('m_tank').value = data.Tank_level;
-            
-            document.getElementById('sys_valve').textContent = data.Valve_status;
-            const vInd = document.getElementById('v_ind');
-            if(data.Valve_status === 'OPEN') {
-                vInd.className = 'status-indicator status-open';
-            } else {
-                vInd.className = 'status-indicator status-closed';
-            }
-            
-            document.getElementById('sys_runtime').textContent = data.Filter_runtime.toFixed(1);
-            document.getElementById('sys_vol').textContent = data.Water_volume_processed.toFixed(0);
+            // System top cards
+            if(document.getElementById('sys_pump')) document.getElementById('sys_pump').textContent = data.Pump_current.toFixed(1);
+            if(document.getElementById('sys_tank')) document.getElementById('sys_tank').textContent = data.Tank_level.toFixed(0);
+            if(document.getElementById('sys_runtime')) document.getElementById('sys_runtime').textContent = data.Filter_runtime.toFixed(1);
+            if(document.getElementById('sys_vol')) document.getElementById('sys_vol').textContent = data.Water_volume_processed.toFixed(0);
 
             // Inputs
             document.getElementById('curr_ph_in').textContent = data.pH_in.toFixed(1);
-            document.getElementById('m_ph_in').value = data.pH_in;
+            setBar('b_ph_in', data.pH_in, 14);
+            
             document.getElementById('curr_tds_in').textContent = data.TDS_in.toFixed(0);
-            document.getElementById('m_tds_in').value = data.TDS_in;
+            setBar('b_tds_in', data.TDS_in, 1000);
+            
             document.getElementById('curr_turb_in').textContent = data.Turbidity_in.toFixed(1);
-            document.getElementById('m_turb_in').value = data.Turbidity_in;
+            setBar('b_turb_in', data.Turbidity_in, 50);
+            
             document.getElementById('curr_temp_in').textContent = data.Temperature_in.toFixed(1);
-            document.getElementById('m_temp_in').value = data.Temperature_in;
+            setBar('b_temp_in', data.Temperature_in, 50);
+            
             document.getElementById('curr_flow_in').textContent = data.Flow_in.toFixed(0);
-            document.getElementById('m_flow_in').value = data.Flow_in;
+            setBar('b_flow_in', data.Flow_in, 150);
 
             // Outputs
             document.getElementById('curr_ph_out').textContent = data.pH_out.toFixed(1);
-            document.getElementById('m_ph_out').value = data.pH_out;
+            setBar('b_ph_out', data.pH_out, 14);
+            
             document.getElementById('curr_tds_out').textContent = data.TDS_out.toFixed(0);
-            document.getElementById('m_tds_out').value = data.TDS_out;
+            setBar('b_tds_out', data.TDS_out, 1000);
+            
             document.getElementById('curr_turb_out').textContent = data.Turbidity_out.toFixed(1);
-            document.getElementById('m_turb_out').value = data.Turbidity_out;
+            setBar('b_turb_out', data.Turbidity_out, 50);
+            
             document.getElementById('curr_temp_out').textContent = data.Temperature_out.toFixed(1);
-            document.getElementById('m_temp_out').value = data.Temperature_out;
+            setBar('b_temp_out', data.Temperature_out, 50);
+            
             document.getElementById('curr_flow_out').textContent = data.Flow_out.toFixed(0);
-            document.getElementById('m_flow_out').value = data.Flow_out;
+            setBar('b_flow_out', data.Flow_out, 150);
         }
     } catch (e) {
         console.error('Error fetching latest data:', e);
@@ -88,12 +83,14 @@ async function fetchHistoryData() {
         const flowIn = data.map(d => d.Flow_in);
         const flowOut = data.map(d => d.Flow_out);
 
+        Chart.defaults.font.family = "'Inter', sans-serif";
+
         // --- TDS CHART (Line) ---
-        const ctxTds = document.getElementById('tdsChart').getContext('2d');
-        if (tdsChartInstance) {
-            tdsChartInstance.destroy();
-        }
-        tdsChartInstance = new Chart(ctxTds, {
+        const ctxTds = document.getElementById('tdsChart');
+        if(!ctxTds) return;
+        if (tdsChartInstance) tdsChartInstance.destroy();
+        
+        tdsChartInstance = new Chart(ctxTds.getContext('2d'), {
             type: 'line',
             data: {
                 labels: labels,
@@ -101,21 +98,21 @@ async function fetchHistoryData() {
                     {
                         label: 'TDS IN',
                         data: tdsIn,
-                        borderColor: '#ff5252',
-                        backgroundColor: 'rgba(255, 82, 82, 0.1)',
+                        borderColor: '#f87171',
+                        backgroundColor: 'rgba(248, 113, 113, 0.1)',
                         borderWidth: 2,
-                        pointRadius: 2,
-                        tension: 0.3,
+                        pointRadius: 0,
+                        tension: 0.4,
                         fill: true
                     },
                     {
                         label: 'TDS OUT',
                         data: tdsOut,
-                        borderColor: '#00e676',
-                        backgroundColor: 'rgba(0, 230, 118, 0.1)',
+                        borderColor: '#34d399',
+                        backgroundColor: 'rgba(52, 211, 153, 0.1)',
                         borderWidth: 2,
-                        pointRadius: 2,
-                        tension: 0.3,
+                        pointRadius: 0,
+                        tension: 0.4,
                         fill: true
                     }
                 ]
@@ -123,21 +120,21 @@ async function fetchHistoryData() {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                color: '#2c3e50',
+                color: '#6b7280',
                 scales: {
-                    x: { ticks: { color: '#7f8c8d' }, grid: { color: '#ecf0f1' } },
-                    y: { beginAtZero: true, ticks: { color: '#7f8c8d' }, grid: { color: '#ecf0f1' } }
+                    x: { ticks: { color: '#9ca3af' }, grid: { display: false } },
+                    y: { beginAtZero: true, ticks: { color: '#9ca3af' }, grid: { color: '#f3f4f6', borderDash: [5, 5] } }
                 },
-                plugins: { legend: { labels: { color: '#2c3e50', font: { family: 'inherit', weight: 'bold' } } } }
+                plugins: { legend: { labels: { color: '#4b5563', font: { weight: '600' } }, position: 'top', align: 'end' } }
             }
         });
 
         // --- FLOW CHART (Bar) ---
-        const ctxFlow = document.getElementById('flowChart').getContext('2d');
-        if (flowChartInstance) {
-            flowChartInstance.destroy();
-        }
-        flowChartInstance = new Chart(ctxFlow, {
+        const ctxFlow = document.getElementById('flowChart');
+        if(!ctxFlow) return;
+        if (flowChartInstance) flowChartInstance.destroy();
+        
+        flowChartInstance = new Chart(ctxFlow.getContext('2d'), {
             type: 'bar',
             data: {
                 labels: labels,
@@ -145,26 +142,28 @@ async function fetchHistoryData() {
                     {
                         label: 'Flow IN',
                         data: flowIn,
-                        backgroundColor: '#3498db',
-                        borderRadius: 3
+                        backgroundColor: '#60a5fa',
+                        borderRadius: 4,
+                        barPercentage: 0.6
                     },
                     {
                         label: 'Flow OUT',
                         data: flowOut,
-                        backgroundColor: '#9b59b6',
-                        borderRadius: 3
+                        backgroundColor: '#818cf8',
+                        borderRadius: 4,
+                        barPercentage: 0.6
                     }
                 ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                color: '#2c3e50',
+                color: '#6b7280',
                 scales: {
-                    x: { ticks: { color: '#7f8c8d' }, grid: { display: false } },
-                    y: { beginAtZero: true, ticks: { color: '#7f8c8d' }, grid: { color: '#ecf0f1' } }
+                    x: { ticks: { color: '#9ca3af' }, grid: { display: false } },
+                    y: { beginAtZero: true, ticks: { color: '#9ca3af' }, grid: { color: '#f3f4f6', borderDash: [5, 5] } }
                 },
-                plugins: { legend: { labels: { color: '#2c3e50', font: { family: 'inherit', weight: 'bold' } } } }
+                plugins: { legend: { labels: { color: '#4b5563', font: { weight: '600' } }, position: 'top', align: 'end' } }
             }
         });
 
@@ -204,5 +203,5 @@ document.getElementById('predictForm').addEventListener('submit', async (e) => {
 // Init
 fetchLatestData();
 fetchHistoryData();
-setInterval(fetchLatestData, 5000); // refresh every 5s
-setInterval(fetchHistoryData, 15000); // refresh chart every 15s
+setInterval(fetchLatestData, 5000); 
+setInterval(fetchHistoryData, 15000); 
