@@ -69,6 +69,9 @@ async function fetchLatestData() {
     }
 }
 
+let tdsChartInstance = null;
+let flowChartInstance = null;
+
 async function fetchHistoryData() {
     try {
         const response = await fetch('/api/data/history');
@@ -81,13 +84,16 @@ async function fetchHistoryData() {
         });
         const tdsIn = data.map(d => d.TDS_in);
         const tdsOut = data.map(d => d.TDS_out);
-
-        const ctx = document.getElementById('historyChart').getContext('2d');
-        if (chartInstance) {
-            chartInstance.destroy();
-        }
         
-        chartInstance = new Chart(ctx, {
+        const flowIn = data.map(d => d.Flow_in);
+        const flowOut = data.map(d => d.Flow_out);
+
+        // --- TDS CHART (Line) ---
+        const ctxTds = document.getElementById('tdsChart').getContext('2d');
+        if (tdsChartInstance) {
+            tdsChartInstance.destroy();
+        }
+        tdsChartInstance = new Chart(ctxTds, {
             type: 'line',
             data: {
                 labels: labels,
@@ -99,7 +105,7 @@ async function fetchHistoryData() {
                         backgroundColor: 'rgba(255, 82, 82, 0.1)',
                         borderWidth: 2,
                         pointRadius: 2,
-                        tension: 0.2,
+                        tension: 0.3,
                         fill: true
                     },
                     {
@@ -109,7 +115,7 @@ async function fetchHistoryData() {
                         backgroundColor: 'rgba(0, 230, 118, 0.1)',
                         borderWidth: 2,
                         pointRadius: 2,
-                        tension: 0.2,
+                        tension: 0.3,
                         fill: true
                     }
                 ]
@@ -119,23 +125,49 @@ async function fetchHistoryData() {
                 maintainAspectRatio: false,
                 color: '#eceff1',
                 scales: {
-                    x: {
-                        ticks: { color: '#b0bec5' },
-                        grid: { color: '#37474f' }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        ticks: { color: '#b0bec5' },
-                        grid: { color: '#37474f' }
-                    }
+                    x: { ticks: { color: '#b0bec5' }, grid: { color: '#37474f' } },
+                    y: { beginAtZero: true, ticks: { color: '#b0bec5' }, grid: { color: '#37474f' } }
                 },
-                plugins: {
-                    legend: {
-                        labels: { color: '#eceff1', font: { family: 'monospace' } }
-                    }
-                }
+                plugins: { legend: { labels: { color: '#eceff1', font: { family: 'monospace' } } } }
             }
         });
+
+        // --- FLOW CHART (Bar) ---
+        const ctxFlow = document.getElementById('flowChart').getContext('2d');
+        if (flowChartInstance) {
+            flowChartInstance.destroy();
+        }
+        flowChartInstance = new Chart(ctxFlow, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Flow IN',
+                        data: flowIn,
+                        backgroundColor: '#29b6f6',
+                        borderRadius: 2
+                    },
+                    {
+                        label: 'Flow OUT',
+                        data: flowOut,
+                        backgroundColor: '#ab47bc',
+                        borderRadius: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                color: '#eceff1',
+                scales: {
+                    x: { ticks: { color: '#b0bec5' }, grid: { display: false } },
+                    y: { beginAtZero: true, ticks: { color: '#b0bec5' }, grid: { color: '#37474f' } }
+                },
+                plugins: { legend: { labels: { color: '#eceff1', font: { family: 'monospace' } } } }
+            }
+        });
+
     } catch (e) {
         console.error('Error fetching history:', e);
     }

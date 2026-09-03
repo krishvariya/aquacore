@@ -102,12 +102,23 @@
             </div>
         </div>
 
-        <div class="row g-2">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header border-bottom-0">Trend Data (TDS In vs Out)</div>
-                    <div class="card-body p-2" style="background: #1e272b;">
-                        <canvas id="historyChart" height="40"></canvas>
+        <div class="row g-2 mt-1">
+            <!-- Left Chart: TDS Trend -->
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header border-bottom-0" style="background-color: #37474f !important;">TDS Reduction Trend (PPM)</div>
+                    <div class="card-body p-3" style="background: #1e272b; height: 250px;">
+                        <canvas id="tdsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Chart: Flow Trend -->
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header border-bottom-0" style="background-color: #37474f !important;">System Flow Profile (L/min)</div>
+                    <div class="card-body p-3" style="background: #1e272b; height: 250px;">
+                        <canvas id="flowChart"></canvas>
                     </div>
                 </div>
             </div>
