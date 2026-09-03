@@ -4,17 +4,19 @@ import random
 import os
 from datetime import datetime, timedelta
 
-app = Flask(__name__)
-# Vercel's serverless environment has a read-only filesystem except for /tmp
-DB_FILE = '/tmp/water_system.db' if os.environ.get('VERCEL') else 'water_system.db'
+import sys
+
+base_dir = os.path.dirname(os.path.abspath(__file__))
+app = Flask(__name__, template_folder=os.path.join(base_dir, 'templates'), static_folder=os.path.join(base_dir, 'static'))
+
+# Use /tmp on Linux (Vercel) to avoid read-only filesystem errors
+DB_FILE = '/tmp/water_system.db' if sys.platform != 'win32' else 'water_system.db'
 
 def get_db_connection():
     conn = sqlite3.connect(DB_FILE)
     conn.row_factory = sqlite3.Row
-    return conn
-
-def init_db():
-    conn = get_db_connection()
+    
+    # Initialize DB lazily to prevent module-level crashes on Vercel
     conn.execute('''
         CREATE TABLE IF NOT EXISTS sensor_data (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -27,7 +29,6 @@ def init_db():
         )
     ''')
     
-    # Check if we need to insert dummy data
     cur = conn.cursor()
     cur.execute('SELECT COUNT(*) FROM sensor_data')
     if cur.fetchone()[0] == 0:
@@ -49,10 +50,13 @@ def init_db():
                 random.uniform(5, 15), random.uniform(20, 80), random.choice(['OPEN', 'CLOSED']),
                 random.uniform(10, 100), random.uniform(1000, 5000)
             ))
-    conn.commit()
-    conn.close()
+        conn.commit()
+    
+    return conn
 
-init_db()
+@app.route('/ping')
+def ping():
+    return jsonify({"status": "ok", "db_file": DB_FILE, "platform": sys.platform})
 
 @app.route('/')
 def index():
