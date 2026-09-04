@@ -9,7 +9,8 @@ import numpy as np
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__, template_folder=os.path.join(base_dir, 'templates'), static_folder=os.path.join(base_dir, 'static'))
-app.secret_key = 'aquacore_secure_session_key' # Required for session management
+# Security: Use an environment variable for the secret key, with a fallback for local dev
+app.secret_key = os.environ.get('SECRET_KEY', 'aquacore_default_secret_key_847291')
 
 # Load the AI model
 model_path = os.path.join(base_dir, 'model.pkl')
@@ -71,12 +72,17 @@ def ping():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    error = None
     if request.method == 'POST':
-        # Demo purposes: Accept any form submission as valid login
-        session['logged_in'] = True
-        session['username'] = request.form.get('username', 'Admin')
-        return redirect(url_for('index'))
-    return render_template('login.html')
+        # Security: Actually verify the password instead of letting anyone in
+        password = request.form.get('password')
+        if password == 'password123':
+            session['logged_in'] = True
+            session['username'] = request.form.get('username', 'Admin')
+            return redirect(url_for('index'))
+        else:
+            error = "Invalid credentials. Please try again."
+    return render_template('login.html', error=error)
 
 @app.route('/logout')
 def logout():
@@ -91,6 +97,7 @@ def index():
 
 @app.route('/api/data/latest')
 def latest_data():
+    if not session.get('logged_in'): return jsonify({'error': 'Unauthorized'}), 401
     conn = get_db_connection()
     data = conn.execute('SELECT * FROM sensor_data ORDER BY timestamp DESC LIMIT 1').fetchone()
     conn.close()
@@ -98,6 +105,7 @@ def latest_data():
 
 @app.route('/api/data/history')
 def history_data():
+    if not session.get('logged_in'): return jsonify({'error': 'Unauthorized'}), 401
     conn = get_db_connection()
     data = conn.execute('SELECT * FROM sensor_data ORDER BY timestamp DESC LIMIT 20').fetchall()
     conn.close()
@@ -105,6 +113,7 @@ def history_data():
 
 @app.route('/api/predict', methods=['POST'])
 def predict():
+    if not session.get('logged_in'): return jsonify({'error': 'Unauthorized'}), 401
     req = request.json
     if not req:
         return jsonify({'error': 'Invalid or missing JSON payload'}), 400

@@ -56,6 +56,12 @@
                 <div style="color: #6b7280; font-size: 0.9rem; font-weight: 500;">Secure Water Infrastructure Access</div>
             </div>
             
+            {% if error %}
+            <div class="alert alert-danger py-2" style="font-size: 0.85rem;" role="alert">
+                {{ error }}
+            </div>
+            {% endif %}
+
             <form method="POST" action="/login">
                 <div>
                     <label class="login-label">Email Address</label>
