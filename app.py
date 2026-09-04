@@ -89,6 +89,9 @@ def history_data():
 @app.route('/api/predict', methods=['POST'])
 def predict():
     req = request.json
+    if not req:
+        return jsonify({'error': 'Invalid or missing JSON payload'}), 400
+
     try:
         ph_in = float(req.get('pH_in', 7.0))
         tds_in = float(req.get('TDS_in', 300))
@@ -96,6 +99,13 @@ def predict():
         temp_in = float(req.get('Temperature_in', 25))
         flow_in = float(req.get('Flow_in', 50))
         
+        # Security: Backend input validation to prevent malicious or out-of-bounds data
+        if not (0 <= ph_in <= 14): return jsonify({'error': 'pH must be between 0 and 14'}), 400
+        if not (0 <= tds_in <= 10000): return jsonify({'error': 'TDS must be between 0 and 10000'}), 400
+        if not (0 <= turb_in <= 1000): return jsonify({'error': 'Turbidity must be between 0 and 1000'}), 400
+        if not (-10 <= temp_in <= 100): return jsonify({'error': 'Temperature must be between -10 and 100'}), 400
+        if not (0 <= flow_in <= 10000): return jsonify({'error': 'Flow must be between 0 and 10000'}), 400
+
         if ai_model:
             # Predict using the real Machine Learning model!
             features = np.array([[ph_in, tds_in, turb_in, temp_in, flow_in]])
