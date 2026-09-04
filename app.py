@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 import sqlite3
 import random
 import os
@@ -9,6 +9,7 @@ import numpy as np
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__, template_folder=os.path.join(base_dir, 'templates'), static_folder=os.path.join(base_dir, 'static'))
+app.secret_key = 'aquacore_secure_session_key' # Required for session management
 
 # Load the AI model
 model_path = os.path.join(base_dir, 'model.pkl')
@@ -68,8 +69,24 @@ def get_db_connection():
 def ping():
     return jsonify({"status": "ok", "db_file": DB_FILE, "platform": sys.platform})
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        # Demo purposes: Accept any form submission as valid login
+        session['logged_in'] = True
+        session['username'] = request.form.get('username', 'Admin')
+        return redirect(url_for('index'))
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
 @app.route('/')
 def index():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
     return render_template('index.html')
 
 @app.route('/api/data/latest')
